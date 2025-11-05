@@ -1,0 +1,40 @@
+# pip install openai
+
+from openai import OpenAI
+from dotenv import load_dotenv
+
+load_dotenv(override=True)
+
+client=OpenAI()
+
+def analyze_numbers(numbers):
+    total=sum(numbers)
+    average=total / len(numbers)
+    maximum=max(numbers)
+    minimum=min(numbers)
+
+    prompt=f""" 
+    I have the following numbers: {numbers},
+    Their total is {total}, average is {average:.2f},
+    maximum is {maximum}, and minimum is {minimum},
+    
+    Please explain these result conversationally,
+    as if you are talking to a human, in a friendly tone."""
+
+    response = client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages = [
+            {"role": "system", "content": "You are a helpful math assistant."},
+            {"role":"user", "content": prompt},
+        ]
+    )
+
+    reply = response.choices[0].message.content
+    return reply
+
+if __name__ == "__main__":
+    raw = input("Enter numbers seperated by spaces: ")
+    nums = [float(x) for x in raw.split()]
+    conversation = analyze_numbers(nums)
+    print("\nAI says:\n")
+    print(conversation)
